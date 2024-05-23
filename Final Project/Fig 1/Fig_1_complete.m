@@ -1,0 +1,84 @@
+function Fig_1_complete
+    function Fig_1c
+        Delta = 0;
+        c_0 = [1; 0];
+        function ab = coeff(t,A,phi)
+            Omega_0 = A*exp(-1j*phi);
+            Omega_R = sqrt(Delta.^2 + abs(Omega_0).^2);
+            ab(1) = cos(t*pi/2*Omega_R/(pi)) - 1j * Delta/Omega_R * sin(t*pi/2*Omega_R/(pi));
+            ab(2) = 1j * Omega_0/Omega_R * sin(t*pi/2*Omega_R/(pi));
+            ab = [ab(1), ab(2)];
+        end
+        
+        function U = propagator(t,A,phi)
+        ab = coeff(t,A,phi);
+        a = ab(1);
+        b = ab(2);
+        U = [sqrt(1)/1*a, sqrt(1)/1*b;
+            -sqrt(1)/1*conj(b), sqrt(1)/1*conj(a)];
+        end
+        
+        function c = propagation(t)
+            c = propagator(t,pi,0)*c_0;
+        end
+        c = [];
+        t_interval = linspace(0,3,200);
+        for t = t_interval
+            c = [c propagation(t)];
+        end
+        plot(t_interval, (abs(c(1,:))).^2, '-', t_interval, (abs(c(2,:))).^2, '-',ones(1,100), linspace(0,1,100), '-black');
+        ylim([0, 1]);
+        legend('$\left|1\right>$', '$\left|2\right>$','Interpreter','latex')
+    end
+
+    function Fig_1d
+        Delta = 0;
+        c_0 = [1; 0; 0];
+        function ab = coeff(t,A,phi)
+            Omega_0 = A*exp(-1j*phi);
+            Omega_R = sqrt(Delta.^2 + abs(Omega_0).^2);
+            ab(1) = cos(t*pi/2*Omega_R/(pi)) - 1j * Delta/Omega_R * sin(t*pi/2*Omega_R/(pi));
+            ab(2) = 1j * Omega_0/Omega_R * sin(t*pi/2*Omega_R/(pi));
+            ab = [ab(1), ab(2)];
+        end
+    
+        
+        function U = propagator(t,A,phi)
+        ab = coeff(t,A,phi);
+        a = ab(1);
+        b = ab(2);
+        U = [sqrt(4)/2*a.^2, sqrt(2)/1*a*b, sqrt(4)/2*b.^2;
+            -sqrt(2)/1*a*conj(b), sqrt(1)/1*a*conj(a) - sqrt(1)/1*b*conj(b), sqrt(2)/1*conj(a)*b;
+            sqrt(4)/2*conj(b).^2, -sqrt(2)/1*conj(a)*conj(b), sqrt(4)/2*conj(a).^2];
+        end
+        
+        function c = propagation(t)
+            c = propagator(t,pi,0)*c_0;
+        end
+        c = [];
+        t_interval = linspace(0,3,200);
+        for t = t_interval
+            c = [c propagation(t)];
+        end
+        plot(t_interval, (abs(c(1,:))).^2, '-', t_interval, (abs(c(2,:))).^2, '-', t_interval, (abs(c(3,:))).^2, '-');
+        ylim([0, 1]);
+        legend('$\left|1\right>$', '$\left|2\right>$', '$\left|3\right>$','Interpreter','latex')
+    end
+
+    subplot(1,2,1);
+    Fig_1c
+    title("(a)")
+    ax = gca;
+    ax.TitleHorizontalAlignment = 'left';
+    xlabel('Time in Units of $\displaystyle {\pi}$/$\displaystyle{\Omega_R}$','Interpreter','latex')
+    ylabel('Part of Population','Interpreter','latex')
+    axis square
+    subplot(1,2,2)
+    Fig_1d
+    title("(b)")
+    ax = gca;
+    ax.TitleHorizontalAlignment = 'left';
+    xlabel('Time in Units of $\displaystyle {\pi}$/$\displaystyle{\Omega_R}$','Interpreter','latex')
+    ylabel('Part of Population','Interpreter','latex')
+    axis square
+end

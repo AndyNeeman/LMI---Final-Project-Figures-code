@@ -1,0 +1,32 @@
+function Fig_1c
+    Delta = 0;
+    phi = pi;
+    A = pi;
+    Omega_0 = A*exp(-1j*phi);
+    Omega_R = sqrt(Delta.^2 + Omega_0.^2);
+    c_0 = [1; 0];
+    function ab = coeff(t)
+        ab(1) = cos(t*pi/2) - 1j * Delta/Omega_R * sin(t*pi/2);
+        ab(2) = 1j * Omega_0/Omega_R * sin(t*pi/2);
+        ab = [ab(1), ab(2)];
+    end
+    
+    function U = propagator(t)
+    ab = coeff(t);
+    a = ab(1);
+    b = ab(2);
+    U = [a, b*exp(-1j*phi); -conj(b)*exp(1j*phi), a];
+    end
+    
+    function c = propagation(t)
+        c = propagator(t)*c_0;
+    end
+    propagation(1)
+    c = [];
+    t_interval = linspace(0,1.5,200);
+    for t = t_interval
+        c = [c propagation(t)];
+    end
+    plot(t_interval, (abs(c(1,:))).^2, '-', t_interval, (abs(c(2,:))).^2, '-');
+    ylim([0, 1]);
+end
